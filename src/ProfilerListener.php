@@ -146,6 +146,5 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
 	unlink($filename);*/
 }
 
-    }
 }
 
