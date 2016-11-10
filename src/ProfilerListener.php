@@ -2,6 +2,7 @@
 namespace algoweb\Profiler\Listener;
 class XHProfTestListener implements \PHPUnit_Framework_TestListener
 {
+    protected $map = array();
     /**
      * @var array
      */
@@ -37,6 +38,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      * A failure occurred.
      *
      * @param \PHPUnit_Framework_Test                 $test
+
      * @param \PHPUnit_Framework_AssertionFailedError $e
      * @param float                                  $time
      */
@@ -105,11 +107,11 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
         $data         = xhprof_disable();
         $name = $test->getName();
 
-        //$path = "/var/www/html/POData/prefile/";
-        $path == __DIR__ . "/res/";
+        $path = dirname(__FILE__) . "/res/";
         $filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $name);
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
-
+        $filename = md5($filename);
+	$this->map[$filename] = $name;
         file_put_contents($path . $filename.".xhprof" ,json_encode ($data));
     }
     /**
@@ -129,13 +131,35 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
     public function endTestSuite(\PHPUnit_Framework_TestSuite $suite)
     {
         $this->suites--;
-        if ($this->suites == 0) {
-            print "\n\nXHProf runs: " . count($this->runs) . "\n";
-            foreach ($this->runs as $test => $run) {
-                print ' * ' . $test . "\n   " . $run . "\n\n";
-            }
-            print "\n";
+if($this->suites == 0){
+        $filename ="/tmp/" . time().".tar";
+	$a = new \PharData($filename);
+	$files = scandir(dirname(__FILE__) . "/res/");
+	foreach($files as $file){
+	if($file == "." || $file == ".."){continue;}
+                $a->addFile( dirname(__FILE__) . "/res/" . $file , "/" . $file);
+		echo(dirname(__FILE__) . "/res/" . $file . "\r\n");
+                unlink( dirname(__FILE__) . "/res/" . $file );
         }
+        $a->addFromString("/map.json",json_encode($this->map));
+        $a->compress(\Phar::GZ);
+	unlink($filename);
+}
+
     }
+/*    function  __destruct (){
+        $this->suites--;
+        $filename ="/tmp/" . time().".tar";
+        $a = new \PharData($filename);
+        $files = scandir(dirname(__FILE__) . "/res/");
+        foreach($files as $file){
+        if($file == "." || $file == ".."){continue;}
+                $a->addFile( dirname(__FILE__) . "/res/" . $file );
+                echo(dirname(__FILE__) . "/res/" . $file . "\r\n");
+                unlink( dirname(__FILE__) . "/res/" . $file );
+        }
+        $a->compress(\Phar::GZ);
+        unlink($filename);
+    }*/
 }
 
