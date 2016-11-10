@@ -1,0 +1,23 @@
+{
+    "name": "algo-web/profiler",
+    "description": "",
+    "type": "library",
+    "keywords": [
+        "phpunit",
+        "prefiler"
+    ],
+    "homepage": "https://github.com/Algo-Web/Profiler",
+    "license": "noneAsYet",
+    "support": {
+        "issues": "https://github.com/Algo-Web/Profiler/issues"
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "phpunit/phpunit": "~4.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+}
