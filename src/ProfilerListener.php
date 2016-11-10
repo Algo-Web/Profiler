@@ -112,7 +112,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
         $filename = md5($filename);
 	$this->map[$filename] = $name;
-        file_put_contents($path . $filename.".xhprof" ,json_encode ($data));
+//        file_put_contents($path . $filename.".xhprof" ,json_encode ($data));
     }
     /**
      * A test suite started.
