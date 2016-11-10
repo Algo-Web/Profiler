@@ -131,7 +131,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
     public function endTestSuite(\PHPUnit_Framework_TestSuite $suite)
     {
         $this->suites--;
-if($this->suites == 0){
+/*if($this->suites == 0){
         $filename =dirname(__FILE__) . "/" . time().".tar";
 	$a = new \PharData($filename);
 	$files = scandir(dirname(__FILE__) . "/res/");
@@ -143,23 +143,9 @@ if($this->suites == 0){
         }
         $a->addFromString("/map.json",json_encode($this->map));
         $a->compress(\Phar::GZ);
-	unlink($filename);
+	unlink($filename);*/
 }
 
     }
-/*    function  __destruct (){
-        $this->suites--;
-        $filename ="/tmp/" . time().".tar";
-        $a = new \PharData($filename);
-        $files = scandir(dirname(__FILE__) . "/res/");
-        foreach($files as $file){
-        if($file == "." || $file == ".."){continue;}
-                $a->addFile( dirname(__FILE__) . "/res/" . $file );
-                echo(dirname(__FILE__) . "/res/" . $file . "\r\n");
-                unlink( dirname(__FILE__) . "/res/" . $file );
-        }
-        $a->compress(\Phar::GZ);
-        unlink($filename);
-    }*/
 }
 
