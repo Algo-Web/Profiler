@@ -112,7 +112,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
         $filename = md5($filename);
 	$this->map[$filename] = $name;
-//        file_put_contents($path . $filename.".xhprof" ,json_encode ($data));
+        file_put_contents($path . $filename.".xhprof" ,json_encode ($data));
     }
     /**
      * A test suite started.
@@ -131,7 +131,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
     public function endTestSuite(\PHPUnit_Framework_TestSuite $suite)
     {
         $this->suites--;
-/*if($this->suites == 0){
+if($this->suites == 0){
         $filename =dirname(__FILE__) . "/" . time().".tar";
 	$a = new \PharData($filename);
 	$files = scandir(dirname(__FILE__) . "/res/");
@@ -143,7 +143,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
         }
         $a->addFromString("/map.json",json_encode($this->map));
         $a->compress(\Phar::GZ);
-	unlink($filename);*/
+	unlink($filename);
 }
 
 }
