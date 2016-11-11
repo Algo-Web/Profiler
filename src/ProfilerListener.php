@@ -144,7 +144,8 @@ if($this->suites == 0){
         $a->addFromString("/map.json",json_encode($this->map));
         $a->compress(\Phar::GZ);
 	unlink($filename);
-}
+    }
 
+}
 }
 
