@@ -132,7 +132,8 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
     {
         $this->suites--;
 if($this->suites == 0){
-        $filename =dirname(__FILE__) . "/" . time().".tar";
+//        $filename =dirname(__FILE__) . "/" . time().".tar";
+        $filename = "/tmp/". time().".tar";
 	$a = new \PharData($filename);
 	$files = scandir(dirname(__FILE__) . "/res/");
 	foreach($files as $file){
