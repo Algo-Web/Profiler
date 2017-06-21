@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": [
         "phpunit",
-        "prefiler"
+        "profiler"
     ],
     "homepage": "https://github.com/Algo-Web/Profiler",
     "license": "noneAsYet",
