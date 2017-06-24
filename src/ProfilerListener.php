@@ -85,14 +85,14 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
         $name = $test->getName();
 
         if (!isset($this->options['xhprofFlags'])) {
-            $flags = XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY;
+            $flags = ALGOWEB_FLAGS_CPU + ALGOWEB_FLAGS_MEMORY;
         } else {
             $flags = 0;
             foreach (explode(',', $this->options['xhprofFlags']) as $flag) {
                 $flags += constant($flag);
             }
         }
-        xhprof_enable($flags, array(
+        algoweb_enable($flags, array(
 //            'ignored_functions' => explode(',', $this->options['xhprofIgnore'])
         ));
     }
@@ -104,7 +104,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      */
     public function endTest(\PHPUnit_Framework_Test $test, $time)
     {
-        $data         = xhprof_disable();
+        $data         = algoweb_disable();
         $name = $test->getName();
 
         $path = dirname(__FILE__) . "/res/";
