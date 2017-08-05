@@ -2,7 +2,6 @@
 
 namespace algoweb\Profiler\Integrator\Profiler;
 
-
 /**
  * Low-level abstraction for storage of profiling data.
  */

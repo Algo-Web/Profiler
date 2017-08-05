@@ -1,6 +1,7 @@
 <?php
 namespace algoweb\Profiler\Listener;
-class XHProfTestListener implements \PHPUnit_Framework_TestListener
+
+class ProfilerListener implements \PHPUnit_Framework_TestListener
 {
     protected $map = array();
     /**
@@ -12,7 +13,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      */
     protected $options = array();
     /**
-     * @var integer
+     * @var int
      */
     protected $suites = 0;
     /**
@@ -29,7 +30,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      *
      * @param \PHPUnit_Framework_Test $test
      * @param \Exception              $e
-     * @param float                  $time
+     * @param float                   $time
      */
     public function addError(\PHPUnit_Framework_Test $test, \Exception $e, $time)
     {
@@ -38,9 +39,8 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      * A failure occurred.
      *
      * @param \PHPUnit_Framework_Test                 $test
-
      * @param \PHPUnit_Framework_AssertionFailedError $e
-     * @param float                                  $time
+     * @param float                                   $time
      */
     public function addFailure(\PHPUnit_Framework_Test $test, \PHPUnit_Framework_AssertionFailedError $e, $time)
     {
@@ -50,7 +50,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      *
      * @param \PHPUnit_Framework_Test $test
      * @param \Exception              $e
-     * @param float                  $time
+     * @param float                   $time
      */
     public function addIncompleteTest(\PHPUnit_Framework_Test $test, \Exception $e, $time)
     {
@@ -60,7 +60,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      *
      * @param \PHPUnit_Framework_Test $test
      * @param \Exception              $e
-     * @param float                  $time
+     * @param float                   $time
      */
     public function addSkippedTest(\PHPUnit_Framework_Test $test, \Exception $e, $time)
     {
@@ -70,7 +70,7 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      *
      * @param \PHPUnit_Framework_Test $test
      * @param \Exception              $e
-     * @param float                  $time
+     * @param float                   $time
      */
     public function addRiskyTest(\PHPUnit_Framework_Test $test, \Exception $e, $time)
     {
@@ -100,19 +100,19 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
      * A test ended.
      *
      * @param \PHPUnit_Framework_Test $test
-     * @param float                  $time
+     * @param float                   $time
      */
     public function endTest(\PHPUnit_Framework_Test $test, $time)
     {
         $data         = algoweb_disable();
         $name = $test->getName();
 
-        $path = dirname(__FILE__) . "/res/";
+        $path = dirname(__FILE__) . '/res/';
         $filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $name);
         $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
         $filename = md5($filename);
-	$this->map[$filename] = $name;
-        file_put_contents($path . $filename.".xhprof" ,json_encode ($data));
+        $this->map[$filename] = $name;
+        file_put_contents($path . $filename.'.xhprof', json_encode($data));
     }
     /**
      * A test suite started.
@@ -131,22 +131,22 @@ class XHProfTestListener implements \PHPUnit_Framework_TestListener
     public function endTestSuite(\PHPUnit_Framework_TestSuite $suite)
     {
         $this->suites--;
-if($this->suites == 0){
-//        $filename =dirname(__FILE__) . "/" . time().".tar";
-        $filename = "/tmp/". time().".tar";
-	$a = new \PharData($filename);
-	$files = scandir(dirname(__FILE__) . "/res/");
-	foreach($files as $file){
-	if($file == "." || $file == ".."){continue;}
-                $a->addFile( dirname(__FILE__) . "/res/" . $file , "/" . $file);
-		echo(dirname(__FILE__) . "/res/" . $file . "\r\n");
-                unlink( dirname(__FILE__) . "/res/" . $file );
+        if ($this->suites == 0) {
+            //        $filename =dirname(__FILE__) . "/" . time().".tar";
+        $filename = '/tmp/'. time().'.tar';
+            $a = new \PharData($filename);
+            $files = scandir(dirname(__FILE__) . '/res/');
+            foreach ($files as $file) {
+                if ($file == '.' || $file == '..') {
+                    continue;
+                }
+                $a->addFile(dirname(__FILE__) . '/res/' . $file, '/' . $file);
+                echo(dirname(__FILE__) . '/res/' . $file . "\r\n");
+                unlink(dirname(__FILE__) . '/res/' . $file);
+            }
+            $a->addFromString('/map.json', json_encode($this->map));
+            $a->compress(\Phar::GZ);
+            unlink($filename);
         }
-        $a->addFromString("/map.json",json_encode($this->map));
-        $a->compress(\Phar::GZ);
-	unlink($filename);
     }
-
 }
-}
-

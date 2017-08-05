@@ -32,7 +32,7 @@ class PhpSpan extends Span
      */
     private $idx;
 
-    static public function clear()
+    public static function clear()
     {
         self::$spans = array();
         self::$startTime = microtime(true);

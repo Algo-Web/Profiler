@@ -2,7 +2,6 @@
 
 namespace algoweb\Profiler\Integrator\Traces;
 
-
 class TwExtensionSpan extends Span
 {
     /**
