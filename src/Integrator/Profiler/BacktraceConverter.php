@@ -7,7 +7,7 @@ namespace algoweb\Profiler\Integrator\Profiler;
  */
 class BacktraceConverter
 {
-    static public function convertToString(array $backtrace)
+    public static function convertToString(array $backtrace)
     {
         $trace = '';
 

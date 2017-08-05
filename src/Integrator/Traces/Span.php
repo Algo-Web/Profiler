@@ -10,8 +10,9 @@ namespace algoweb\Profiler\Integrator\Traces;
 abstract class Span
 {
     /**
-     * Create Child span
+     * Create Child span.
      * @private
+     * @param null|mixed $name
      */
     abstract public function createSpan($name = null);
 
@@ -26,26 +27,26 @@ abstract class Span
      *
      * @return int
      */
-    public abstract function getId();
+    abstract public function getId();
 
     /**
      * Record start of timer in microseconds.
      *
      * If timer is already running, don't record another start.
      */
-    public abstract function startTimer();
+    abstract public function startTimer();
 
     /**
      * Record stop of timer in microseconds.
      *
      * If timer is not running, don't record.
      */
-    public abstract function stopTimer();
+    abstract public function stopTimer();
 
     /**
      * Annotate span with metadata.
      *
      * @param array<string,scalar>
      */
-    public abstract function annotate(array $annotations);
+    abstract public function annotate(array $annotations);
 }

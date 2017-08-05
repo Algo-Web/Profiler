@@ -2,9 +2,8 @@
 
 namespace algoweb\Profiler\Integrator;
 
-
 /**
- * ALGOWEB PHP API
+ * ALGOWEB PHP API.
  *
  * Contains all methods to gather measurements and profile data with
  * Xhprof and send to local Profiler Collector Daemon.
@@ -246,7 +245,7 @@ class Profiler
     /**
      * Add more ignore functions to profiling options.
      *
-     * @param array<string> $functionNames
+     * @param  array<string> $functionNames
      * @return void
      */
     public static function addIgnoreFunctions(array $functionNames)
@@ -266,18 +265,19 @@ class Profiler
      * WARNING: This method can cause huge performance impact on production
      * setups. Make sure to wrap this in your own sampling code and don't
      * execute it in every request.
+     * @param null|mixed $apiKey
      */
     public static function startDevelopment($apiKey = null, array $options = array())
     {
         if ($apiKey) {
             $options['api_key'] = $apiKey;
-        } else if (!isset($options['api_key'])) {
-            $options['api_key'] = isset($_SERVER['ALGOWEB_APIKEY']) ? $_SERVER['ALGOWEB_APIKEY'] : ini_get("algoweb.api_key");
+        } elseif (!isset($options['api_key'])) {
+            $options['api_key'] = isset($_SERVER['ALGOWEB_APIKEY']) ? $_SERVER['ALGOWEB_APIKEY'] : ini_get('algoweb.api_key');
         }
 
         $time = time() + 60;
         $_SERVER['ALGOWEB_SESSION'] =
-            "time=" . $time . "&user=&method=&hash=" .
+            'time=' . $time . '&user=&method=&hash=' .
             hash_hmac('sha256', 'method=&time=' . $time . '&user=', md5($options['api_key']))
         ;
 
@@ -311,8 +311,8 @@ class Profiler
      * start() automatically invokes a register shutdown handler that stops and
      * transmits the profiling data to the local daemon for further processing.
      *
-     * @param array|string      $options Either options array or api key (when string)
-     * @param int               $sampleRate Deprecated, use "sample_rate" key in options instead.
+     * @param array|string $options    Either options array or api key (when string)
+     * @param int          $sampleRate deprecated, use "sample_rate" key in options instead
      *
      * @return void
      */
@@ -328,14 +328,14 @@ class Profiler
         }
 
         $defaults = array(
-            'api_key' => isset($_SERVER['ALGOWEB_APIKEY']) ? $_SERVER['ALGOWEB_APIKEY'] : ini_get("algoweb.api_key"),
-            'sample_rate' => isset($_SERVER['ALGOWEB_SAMPLERATE']) ? intval($_SERVER['ALGOWEB_SAMPLERATE']) : (ini_get("algoweb.sample_rate") ?: 0),
-            'collect' => isset($_SERVER['ALGOWEB_COLLECT']) ? $_SERVER['ALGOWEB_COLLECT'] : (ini_get("algoweb.collect") ?: self::MODE_PROFILING),
-            'monitor' => isset($_SERVER['ALGOWEB_MONITOR']) ? $_SERVER['ALGOWEB_MONITOR'] : (ini_get("algoweb.monitor") ?: self::MODE_BASIC),
+            'api_key' => isset($_SERVER['ALGOWEB_APIKEY']) ? $_SERVER['ALGOWEB_APIKEY'] : ini_get('algoweb.api_key'),
+            'sample_rate' => isset($_SERVER['ALGOWEB_SAMPLERATE']) ? intval($_SERVER['ALGOWEB_SAMPLERATE']) : (ini_get('algoweb.sample_rate') ?: 0),
+            'collect' => isset($_SERVER['ALGOWEB_COLLECT']) ? $_SERVER['ALGOWEB_COLLECT'] : (ini_get('algoweb.collect') ?: self::MODE_PROFILING),
+            'monitor' => isset($_SERVER['ALGOWEB_MONITOR']) ? $_SERVER['ALGOWEB_MONITOR'] : (ini_get('algoweb.monitor') ?: self::MODE_BASIC),
             'triggered' => self::MODE_FULL,
-            'log_level' => ini_get("ALGOWEB.log_level") ?: 0,
-            'service' => isset($_SERVER['ALGOWEB_SERVICE']) ? $_SERVER['ALGOWEB_SERVICE'] : ini_get("algoweb.service"),
-            'framework' => isset($_SERVER['ALGOWEB_FRAMEWORK']) ? $_SERVER['ALGOWEB_FRAMEWORK'] : ini_get("algoweb.framework"),
+            'log_level' => ini_get('ALGOWEB.log_level') ?: 0,
+            'service' => isset($_SERVER['ALGOWEB_SERVICE']) ? $_SERVER['ALGOWEB_SERVICE'] : ini_get('algoweb.service'),
+            'framework' => isset($_SERVER['ALGOWEB_FRAMEWORK']) ? $_SERVER['ALGOWEB_FRAMEWORK'] : ini_get('algoweb.framework'),
         );
         $options = array_merge($defaults, $options);
 
@@ -351,7 +351,7 @@ class Profiler
     /**
      * Enable the profiler in the given $mode.
      *
-     * @param string $mode
+     * @param  string $mode
      * @return void
      */
     private static function enableProfiler($mode)
@@ -389,20 +389,20 @@ class Profiler
                 }
             }
 
-            self::log(2, "Starting algoweb extension for " . self::$trace['apiKey'] . " with mode: " . $mode);
+            self::log(2, 'Starting algoweb extension for ' . self::$trace['apiKey'] . ' with mode: ' . $mode);
         } elseif (self::$extension === self::EXTENSION_XHPROF && (self::$mode & self::MODE_PROFILING) > 0) {
             \algoweb\Profiler\Integrator\Traces\PhpSpan::clear();
             self::$currentRootSpan = new \algoweb\Profiler\Integrator\Traces\PhpSpan(0, 'app');
             self::$currentRootSpan->startTimer();
 
             xhprof_enable(0, self::$defaultOptions);
-            self::log(2, "Starting xhprof extension for " . self::$trace['apiKey'] . " with mode: " . $mode);
+            self::log(2, 'Starting xhprof extension for ' . self::$trace['apiKey'] . ' with mode: ' . $mode);
         } else {
             \algoweb\Profiler\Integrator\Traces\PhpSpan::clear();
             self::$currentRootSpan = new \algoweb\Profiler\Integrator\Traces\PhpSpan(0, 'app');
             self::$currentRootSpan->startTimer();
 
-            self::log(2, "Starting non-extension based tracing for " . self::$trace['apiKey'] . " with mode: " . $mode);
+            self::log(2, 'Starting non-extension based tracing for ' . self::$trace['apiKey'] . ' with mode: ' . $mode);
         }
     }
 
@@ -417,11 +417,11 @@ class Profiler
     {
         if (isset($_SERVER['HTTP_X_ALGOWEB_PROFILER']) && is_string($_SERVER['HTTP_X_ALGOWEB_PROFILER'])) {
             return true;
-        } else if (isset($_SERVER['ALGOWEB_SESSION']) && is_string($_SERVER['ALGOWEB_SESSION'])) {
+        } elseif (isset($_SERVER['ALGOWEB_SESSION']) && is_string($_SERVER['ALGOWEB_SESSION'])) {
             return true;
-        } else if (isset($_COOKIE['ALGOWEB_SESSION']) && is_string($_COOKIE['ALGOWEB_SESSION'])) {
+        } elseif (isset($_COOKIE['ALGOWEB_SESSION']) && is_string($_COOKIE['ALGOWEB_SESSION'])) {
             return true;
-        } else if (isset($_GET['_algoweb']) && is_array($_GET['_algoweb'])) {
+        } elseif (isset($_GET['_algoweb']) && is_array($_GET['_algoweb'])) {
             return true;
         }
 
@@ -431,8 +431,8 @@ class Profiler
     /**
      * Decide in which mode to start collecting data.
      *
-     * @param int $treshold (0-100)
-     * @param array $options
+     * @param  int   $treshold (0-100)
+     * @param  array $options
      * @return int
      */
     private static function decideProfiling($treshold, array $options = array())
@@ -443,13 +443,13 @@ class Profiler
         if (isset($_SERVER['HTTP_X_ALGOWEB_PROFILER']) && is_string($_SERVER['HTTP_X_ALGOWEB_PROFILER'])) {
             parse_str($_SERVER['HTTP_X_ALGOWEB_PROFILER'], $vars);
             $type = 'header X-Algoweb-Profiler';
-        } else if (isset($_SERVER['ALGOWEB_SESSION']) && is_string($_SERVER['ALGOWEB_SESSION'])) {
+        } elseif (isset($_SERVER['ALGOWEB_SESSION']) && is_string($_SERVER['ALGOWEB_SESSION'])) {
             parse_str($_SERVER['ALGOWEB_SESSION'], $vars);
             $type = 'environment variable ALGOWEB_SESSION';
-        } else if (isset($_COOKIE['ALGOWEB_SESSION']) && is_string($_COOKIE['ALGOWEB_SESSION'])) {
+        } elseif (isset($_COOKIE['ALGOWEB_SESSION']) && is_string($_COOKIE['ALGOWEB_SESSION'])) {
             parse_str($_COOKIE['ALGOWEB_SESSION'], $vars);
             $type = 'cookie ALGOWEB_SESSION';
-        } else if (isset($_GET['_algoweb']) && is_array($_GET['_algoweb'])) {
+        } elseif (isset($_GET['_algoweb']) && is_array($_GET['_algoweb'])) {
             $vars = $_GET['_algoweb'];
             $type = 'GET parameter';
         }
@@ -460,16 +460,15 @@ class Profiler
 
         if (isset($vars['hash'], $vars['time'], $vars['user'], $vars['method'])) {
             $message = 'method=' . $vars['method'] . '&time=' . $vars['time'] . '&user=' . $vars['user'];
-            self::log(3, "Found explicit trigger trace parameters in " . $type);
+            self::log(3, 'Found explicit trigger trace parameters in ' . $type);
 
             if ($vars['time'] > time() && hash_hmac('sha256', $message, md5(self::$trace['apiKey'])) === $vars['hash']) {
-
                 if (self::$logLevel >= 2) {
-                    $location = "unknown";
+                    $location = 'unknown';
                     $backtrace = debug_backtrace();
 
                     for ($i = count($backtrace) - 1; $i >= 0; $i--) { // find the last call location before going into algoweb\Profiler\Integrator\\Profiler
-                        if (isset($backtrace[$i-1]['class']) && $backtrace[$i-1]['class'] === "algoweb\\Profiler\\Integrator\\Profiler") {
+                        if (isset($backtrace[$i-1]['class']) && $backtrace[$i-1]['class'] === 'algoweb\\Profiler\\Integrator\\Profiler') {
                             $location = isset($backtrace[$i]['file']) ? $backtrace[$i]['file'] : '';
                             $location .= (':' . (isset($backtrace[$i]['line']) ? $backtrace[$i]['line'] : ''));
 
@@ -477,7 +476,7 @@ class Profiler
                         }
                     }
 
-                    self::log(2, "Successful trigger trace request with valid hash in " . $type . " started from " . $location);
+                    self::log(2, 'Successful trigger trace request with valid hash in ' . $type . ' started from ' . $location);
                 }
 
                 self::$trace['keep'] = true; // always keep
@@ -486,11 +485,11 @@ class Profiler
                 self::setCustomVariable('user', $vars['user']);
                 return;
             } else {
-                self::log(1, "Invalid trigger trace request cannot be authenticated.");
+                self::log(1, 'Invalid trigger trace request cannot be authenticated.');
             }
         }
 
-        self::log(3, sprintf("Profiling decision with sample-rate: %d", $treshold));
+        self::log(3, sprintf('Profiling decision with sample-rate: %d', $treshold));
 
         $collectMode = self::convertMode($options['collect']);
         $monitorMode = self::convertMode($options['monitor']) & self::MODE_BASIC;
@@ -504,6 +503,7 @@ class Profiler
     /**
      * Make sure provided mode is converted to a valid integer value.
      *
+     * @param  mixed $mode
      * @return int
      */
     private static function convertMode($mode)
@@ -512,9 +512,9 @@ class Profiler
             $mode = defined('\algoweb\Profiler\Integrator\Profiler::MODE_' . strtoupper($mode))
                 ? constant('\algoweb\Profiler\Integrator\Profiler::MODE_' . strtoupper($mode))
                 : self::MODE_DISABLED;
-        } else if (!is_int($mode)) {
+        } elseif (!is_int($mode)) {
             $mode = self::MODE_DISABLED;
-        } else if (($mode & (self::MODE_FULL|self::MODE_BASIC)) === 0) {
+        } elseif (($mode & (self::MODE_FULL|self::MODE_BASIC)) === 0) {
             $mode = self::MODE_DISABLED;
         }
 
@@ -533,7 +533,7 @@ class Profiler
 
             if (self::$extension === self::EXTENSION_XHPROF) {
                 xhprof_disable();
-            } else if (self::$extension === self::EXTENSION_ALGOWEB) {
+            } elseif (self::$extension === self::EXTENSION_ALGOWEB) {
                 algoweb_disable();
             }
         }
@@ -542,7 +542,7 @@ class Profiler
     private static function init($apiKey, $options)
     {
         if (self::$shutdownRegistered == false) {
-            register_shutdown_function(array("algoweb\\Profiler\\Integrator\\Profiler", "shutdown"));
+            register_shutdown_function(array('algoweb\\Profiler\\Integrator\\Profiler', 'shutdown'));
             self::$shutdownRegistered = true;
         }
 
@@ -559,7 +559,7 @@ class Profiler
 
         if (function_exists('algoweb_enable')) {
             self::$extension = self::EXTENSION_ALGOWEB;
-        } else if (function_exists('xhprof_enable')) {
+        } elseif (function_exists('xhprof_enable')) {
             self::$extension = self::EXTENSION_XHPROF;
         }
 
@@ -631,6 +631,7 @@ class Profiler
 
     /**
      * @deprecated
+     * @param mixed $name
      */
     public static function setOperationName($name)
     {
@@ -673,8 +674,8 @@ class Profiler
      * url if you want to transmit it. The Profiler UI will specially
      * display it.
      *
-     * @param string $name
-     * @param scalar $value
+     * @param  string $name
+     * @param  scalar $value
      * @return void
      */
     public static function setCustomVariable($name, $value)
@@ -720,6 +721,8 @@ class Profiler
      *     $span->annotate(array('title' => $context['args'][0]));
      *     return $span->getId();
      * });
+     * @param mixed $function
+     * @param mixed $callback
      */
     public static function watchCallback($function, $callback)
     {
@@ -739,6 +742,7 @@ class Profiler
      *
      *  $span = \algoweb\Profiler\Integrator\Profiler::createSpan('sql');
      *
+     * @param  mixed                                    $name
      * @return \algoweb\Profiler\Integrator\Traces\Span
      */
     public static function createSpan($name)
@@ -765,8 +769,8 @@ class Profiler
 
         if (function_exists('algoweb_last_detected_exception') && $exception = algoweb_last_detected_exception()) {
             self::logException($exception);
-        } elseif (function_exists("http_response_code") && http_response_code() >= 500) {
-            self::logFatal("PHP request set error HTTP response code to '" . http_response_code() . "'.", "", 0, E_USER_ERROR);
+        } elseif (function_exists('http_response_code') && http_response_code() >= 500) {
+            self::logFatal("PHP request set error HTTP response code to '" . http_response_code() . "'.", '', 0, E_USER_ERROR);
         }
 
         $profilingData = array();
@@ -800,20 +804,19 @@ class Profiler
             if (isset($_SERVER['REQUEST_URI'])) {
                 $annotations['title'] = '';
                 if (isset($_SERVER['REQUEST_METHOD'])) {
-                    $annotations['title'] = $_SERVER["REQUEST_METHOD"] . ' ';
+                    $annotations['title'] = $_SERVER['REQUEST_METHOD'] . ' ';
                 }
 
                 if (isset($_SERVER['HTTP_HOST'])) {
                     $annotations['title'] .= (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . self::getRequestUri();
-                } elseif(isset($_SERVER['SERVER_ADDR'])) {
+                } elseif (isset($_SERVER['SERVER_ADDR'])) {
                     $annotations['title'] .= (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['SERVER_ADDR'] . self::getRequestUri();
                 }
 
                 if (isset($_SERVER['QUERY_STRING'])) {
                     $annotations['query'] = $_SERVER['QUERY_STRING'];
                 }
-
-            } elseif ($annotations['sapi'] === "cli") {
+            } elseif ($annotations['sapi'] === 'cli') {
                 $annotations['title'] = basename($_SERVER['argv'][0]);
             }
         } else {
@@ -859,18 +862,18 @@ class Profiler
      */
     public static function guessOperationName()
     {
-        if (php_sapi_name() === "cli") {
-            return "cli:" . basename($_SERVER["argv"][0]);
+        if (php_sapi_name() === 'cli') {
+            return 'cli:' . basename($_SERVER['argv'][0]);
         }
 
-        return $_SERVER["REQUEST_METHOD"] . " " . self::getRequestUri();
+        return $_SERVER['REQUEST_METHOD'] . ' ' . self::getRequestUri();
     }
 
     protected static function getRequestUri()
     {
-        return strpos($_SERVER["REQUEST_URI"], "?")
-            ? substr($_SERVER["REQUEST_URI"], 0, strpos($_SERVER["REQUEST_URI"], "?"))
-            : $_SERVER["REQUEST_URI"];
+        return strpos($_SERVER['REQUEST_URI'], '?')
+            ? substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'))
+            : $_SERVER['REQUEST_URI'];
     }
 
     public static function logFatal($message, $file, $line, $type = null, $trace = null)
@@ -889,10 +892,10 @@ class Profiler
 
         self::$error = true;
         self::$currentRootSpan->annotate(array(
-            "err_msg" => $message,
-            "err_source" => $file . ':' . $line,
-            "err_exception" => 'EngineException', // Forward compatibility with PHP7
-            "err_trace" => $trace,
+            'err_msg' => $message,
+            'err_source' => $file . ':' . $line,
+            'err_exception' => 'EngineException', // Forward compatibility with PHP7
+            'err_trace' => $trace,
         ));
     }
 
@@ -913,10 +916,10 @@ class Profiler
 
         self::$error = true;
         self::$currentRootSpan->annotate(array(
-            "err_msg" => $exception->getMessage(),
-            "err_source" => $exception->getFile() . ':' . $exception->getLine(),
-            "err_exception" => get_class($exception),
-            "err_trace" => \algoweb\Profiler\Integrator\Profiler\BacktraceConverter::convertToString($exception->getTrace()),
+            'err_msg' => $exception->getMessage(),
+            'err_source' => $exception->getFile() . ':' . $exception->getLine(),
+            'err_exception' => get_class($exception),
+            'err_trace' => \algoweb\Profiler\Integrator\Profiler\BacktraceConverter::convertToString($exception->getTrace()),
         ));
     }
 
@@ -928,7 +931,7 @@ class Profiler
 
         $lastError = error_get_last();
 
-        if ($lastError && ($lastError["type"] === E_ERROR || $lastError["type"] === E_PARSE || $lastError["type"] === E_COMPILE_ERROR)) {
+        if ($lastError && ($lastError['type'] === E_ERROR || $lastError['type'] === E_PARSE || $lastError['type'] === E_COMPILE_ERROR)) {
             $lastError['trace'] = function_exists('algoweb_fatal_backtrace') ? algoweb_fatal_backtrace() : null;
 
             self::logFatal($lastError['message'], $lastError['file'], $lastError['line'], $lastError['type'], $lastError['trace']);
@@ -938,15 +941,15 @@ class Profiler
     }
 
     /**
-     * Check for auto starting the Profiler in Web and CLI (via Env Variable)
+     * Check for auto starting the Profiler in Web and CLI (via Env Variable).
      */
     public static function autoStart()
     {
-        if (ini_get("algoweb.auto_start") || isset($_SERVER["ALGOWEB_AUTO_START"])) {
+        if (ini_get('algoweb.auto_start') || isset($_SERVER['ALGOWEB_AUTO_START'])) {
             if (self::isStarted() === false) {
                 switch (php_sapi_name()) {
                     case 'cli':
-                        if (ini_get("algoweb.monitor_cli")) {
+                        if (ini_get('algoweb.monitor_cli')) {
                             self::start(array('service' => 'cli'));
                         }
                         break;
@@ -958,7 +961,7 @@ class Profiler
         }
 
         if (self::requiresDelegateToOriginalPrependFile()) {
-            require_once ini_get("auto_prepend_file");
+            require_once ini_get('auto_prepend_file');
         }
     }
 
@@ -969,22 +972,22 @@ class Profiler
     {
         return ini_get('algoweb.auto_prepend_library') &&
             algoweb_prepend_overwritten() &&
-            ini_get("auto_prepend_file") &&
-            file_exists(stream_resolve_include_path(ini_get("auto_prepend_file")));
+            ini_get('auto_prepend_file') &&
+            file_exists(stream_resolve_include_path(ini_get('auto_prepend_file')));
     }
 
     /**
      * Log a message to the PHP error log when the defined log-level is higher
      * or equal to the messages log-level.
      *
-     * @param int $level Logs message level. 1 = warning, 2 = notice, 3 = debug
-     * @param string $message
+     * @param  int    $level   Logs message level. 1 = warning, 2 = notice, 3 = debug
+     * @param  string $message
      * @return void
      */
     public static function log($level, $message)
     {
         if ($level <= self::$logLevel) {
-            $level = ($level === 3) ? "debug" : (($level === 2) ? "info" : "warn");
+            $level = ($level === 3) ? 'debug' : (($level === 2) ? 'info' : 'warn');
             error_log(sprintf('[%s] algoweb - %s', $level, $message), 0);
         }
     }

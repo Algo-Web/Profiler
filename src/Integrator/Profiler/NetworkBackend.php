@@ -10,14 +10,14 @@ class NetworkBackend implements Backend
      */
     const TYPE_PROFILE = 'profile';
     /**
-     * v2 type traces
+     * v2 type traces.
      */
     const TYPE_TRACE = 'trace';
 
     private $socketFile;
     private $udp;
 
-    public function __construct($socketFile = "unix:///var/run/algoweb/algowebd.sock", $udp = "127.0.0.1:8135")
+    public function __construct($socketFile = 'unix:///var/run/algoweb/algowebd.sock', $udp = '127.0.0.1:8135')
     {
         $this->socketFile = $socketFile;
         $this->udp = $udp;
@@ -27,6 +27,10 @@ class NetworkBackend implements Backend
      * To avoid user apps messing up socket errors that Algoweb can produce
      * when the daemon is not reachable, this error handler is used
      * wrapped around daemons to guard user apps from erroring.
+     * @param mixed $errno
+     * @param mixed $errstr
+     * @param mixed $errfile
+     * @param mixed $errline
      */
     public static function ignoreErrorsHandler($errno, $errstr, $errfile, $errline)
     {
@@ -36,15 +40,15 @@ class NetworkBackend implements Backend
     public function socketStore(array $trace)
     {
         if (!function_exists('json_encode')) {
-            \algoweb\Profiler\Integrator\Profiler::log(1, "ext/json must be installed and activated to use Agloweb.");
+            \algoweb\Profiler\Integrator\Profiler::log(1, 'ext/json must be installed and activated to use Agloweb.');
             return;
         }
 
-        set_error_handler(array(__CLASS__, "ignoreErrorsHandler"));
+        set_error_handler(array(__CLASS__, 'ignoreErrorsHandler'));
         $fp = stream_socket_client($this->socketFile);
 
         if ($fp == false) {
-            \algoweb\Profiler\Integrator\Profiler::log(1, "Cannot connect to socket for storing trace.");
+            \algoweb\Profiler\Integrator\Profiler::log(1, 'Cannot connect to socket for storing trace.');
             restore_error_handler();
             return;
         }
@@ -68,25 +72,25 @@ class NetworkBackend implements Backend
         stream_set_timeout($fp, 0, $timeout); // 10 milliseconds max
 
         if (fwrite($fp, $payload) < strlen($payload)) {
-            \algoweb\Profiler\Integrator\Profiler::log(1, "Could not write payload to socket.");
+            \algoweb\Profiler\Integrator\Profiler::log(1, 'Could not write payload to socket.');
         }
         fclose($fp);
         restore_error_handler();
-        \algoweb\Profiler\Integrator\Profiler::log(3, "Sent trace to socket.");
+        \algoweb\Profiler\Integrator\Profiler::log(3, 'Sent trace to socket.');
     }
 
     public function udpStore(array $trace)
     {
         if (!function_exists('json_encode')) {
-            \algoweb\Profiler\Integrator\Profiler::log(1, "ext/json must be installed and activated to use Algoweb.");
+            \algoweb\Profiler\Integrator\Profiler::log(1, 'ext/json must be installed and activated to use Algoweb.');
             return;
         }
 
-        set_error_handler(array(__CLASS__, "ignoreErrorsHandler"));
-        $fp = stream_socket_client("udp://" . $this->udp);
+        set_error_handler(array(__CLASS__, 'ignoreErrorsHandler'));
+        $fp = stream_socket_client('udp://' . $this->udp);
 
         if ($fp == false) {
-            \algoweb\Profiler\Integrator\Profiler::log(1, "Cannot connect to UDP port for storing trace.");
+            \algoweb\Profiler\Integrator\Profiler::log(1, 'Cannot connect to UDP port for storing trace.');
             restore_error_handler();
             return;
         }
@@ -99,10 +103,10 @@ class NetworkBackend implements Backend
 
         stream_set_timeout($fp, 0, 200);
         if (fwrite($fp, $payload) < strlen($payload)) {
-            \algoweb\Profiler\Integrator\Profiler::log(1, "Could not write payload to UDP port.");
+            \algoweb\Profiler\Integrator\Profiler::log(1, 'Could not write payload to UDP port.');
         }
         fclose($fp);
         restore_error_handler();
-        \algoweb\Profiler\Integrator\Profiler::log(3, "Sent trace to UDP port.");
+        \algoweb\Profiler\Integrator\Profiler::log(3, 'Sent trace to UDP port.');
     }
 }
